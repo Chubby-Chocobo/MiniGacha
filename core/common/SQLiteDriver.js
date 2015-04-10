@@ -12,7 +12,7 @@ module.exports = BaseClass.subclass({
 
         async.auto({
             createDB : function(next) {
-                var filePath = "../data/db/" + filename;
+                var filePath = __dirname + "/../../data/db/" + filename;
                 self._db = new sqlite3.Database(filePath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, next);
             },
         }, function(err, res) {
@@ -20,31 +20,43 @@ module.exports = BaseClass.subclass({
         });
     },
 
-    get : function(sql, params, callback) {
-        this._db.get(sql, params, callback);
+    get : function(sql, callback) {
+        logger.info("SQL: get [" + sql + "]");
+        this._db.get(sql, [], callback);
     },
 
-    all : function(sql, params, callback) {
-        this._db.all(sql, params, callback);
+    all : function(sql, callback) {
+        logger.info("SQL: all [" + sql + "]");
+        this._db.all(sql, [], callback);
     },
 
-    each : function(sql, params, eachCallback, finalCallback) {
-        this._db.each(sql, params, eachCallback, finalCallback);
+    each : function(sql, eachCallback, finalCallback) {
+        logger.info("SQL: each [" + sql + "]");
+        this._db.each(sql, [], eachCallback, finalCallback);
     },
 
     exec : function(sql, callback) {
+        logger.info("SQL: exec [" + sql + "]");
         this._db.exec(sql, callback);
     },
 
-    run : function(sql, params, callback) {
-        this._db.run(sql, params, callback);
+    run : function(sql, callback) {
+        logger.info("SQL: run [" + sql + "]");
+        this._db.run(sql, [], callback);
+    },
+
+    beginTransaction : function(callback) {
+        logger.info("SQL: BEGIN TRANSACTION");
+        db.run("BEGIN", [], callback);
     },
 
     commit : function(callback) {
+        logger.info("SQL: COMMIT");
         this.run("COMMIT", [], callback);
     },
 
     rollback : function(callback) {
+        logger.info("SQL: ROLLBACK");
         this.run("ROLLBACK", [], callback);
     },
 });

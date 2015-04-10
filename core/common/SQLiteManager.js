@@ -30,6 +30,8 @@ module.exports = BaseClass.subclass({
         }, function(err, res) {
             callback(err, res.createDrive);
         });
+
+        return self._drivers[key];
     },
 
     release : function(callback) {

@@ -1,10 +1,9 @@
 var AServer = require("../core/Main");
-var Const   = require("../core/common/Const");
 var Config  = require("../config/Config");
 var Routes  = require("../config/Routes");
 
-function createServerInstance() {
-
+function boot() {
+    logger.info("Start booting application...");
     if(!global.aserver) {
         global.aserver = {};
     }
@@ -17,15 +16,22 @@ function createServerInstance() {
         env     : process.env.NODE_ENV || Const.ENV.DEV,
     });
 
+    logger.info("Application initialized. Creating routes table...");
+
     for (var path in Routes) {
         var controller = new Routes[path]();
         controller.initialize();
         global.aserver.app.addController(path, controller);
     }
-}
 
-function boot() {
-    createServerInstance();
+    getModel = function(name) {
+        return global.aserver.app.getModel(name);
+    };
+
+    getService = function(name) {
+        return global.aserver.app.getService(name);
+    };
+
 }
 
 boot();

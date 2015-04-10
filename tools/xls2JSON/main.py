@@ -33,8 +33,8 @@ TABLE_MAPPING = {
     },
     "gacha_box" : {
         "gacha_id"              : "int",
-        "reset_condition"       : "int",
-        "reset_condition_value" : "int"
+        "reset_condition"       : "text",
+        "reset_condition_value" : "text"
     },
     "gacha_box_content" : {
         "gacha_id"              : "int",

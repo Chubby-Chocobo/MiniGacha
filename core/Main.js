@@ -1,14 +1,17 @@
-var http            = require("http");
-var express         = require("express");
-var path            = require("path");
-var morgan          = require("morgan");
-var log4js          = require("log4js");
-var cookieParser    = require("cookie-parser");
-var bodyParser      = require("body-parser");
+http                = require("http");
+express             = require("express");
+morgan              = require("morgan");
+log4js              = require("log4js");
+cookieParser        = require("cookie-parser");
+bodyParser          = require("body-parser");
+path                = require("path");
+_                   = require("underscore");
+async               = require("async");
+fs                  = require("fs");
+logger              = log4js.getLogger();
+Const               = require("./common/Const");
+Utils               = require("./common/Utils");
 
-logger = log4js.getLogger();
-
-var Const           = require("./common/Const");
 var BaseClass       = require("./common/BaseClass");
 var SQLiteManager   = require("./common/SQLiteManager");
 
@@ -19,7 +22,6 @@ var AServer = BaseClass.subclass({
         this._initApp(data);
         this._initServer(data);
         this._initDBManager(data);
-        this._initModels(data);
     },
 
     _initApp : function(data) {
@@ -54,13 +56,6 @@ var AServer = BaseClass.subclass({
         } else {
             logger.error(this.classname + "::_initDBManager does not support db type: " + data.dbType);
         }
-
-        // TODO: test code
-        var driver = this._dbManager.getSQLiteDriver("common", function(){});
-    },
-
-    _initModels : function(data) {
-
     },
 
     addController : function(path, controller) {
@@ -73,6 +68,46 @@ var AServer = BaseClass.subclass({
 
     onError : function() {
         logger.info("onError");
+    },
+
+    getModel : function(name) {
+        if (!this._dbManager) {
+            logger.error(classname + "::getModel cannot get model before init database connection.");
+            return;
+        }
+
+        if (!this._models) {
+            this._models = {};
+        }
+
+        if (!this._models[name]) {
+            var dbDriver = this._dbManager.getSQLiteDriver("common", function(){});
+            var ModelClass = require("../app/models/" + name);
+            this._models[name] = new ModelClass();
+            this._models[name].initialize(dbDriver);
+        }
+
+        return this._models[name];
+    },
+
+    getService : function(name) {
+        if (!this._dbManager) {
+            logger.error(classname + "::getSerivce cannot get service before init database connection.");
+            return;
+        }
+
+        if (!this._services) {
+            this._services = {};
+        }
+
+        if (!this._services[name]) {
+            var dbDriver = this._dbManager.getSQLiteDriver("common", function(){});
+            var ServiceClass = require("../app/services/" + name);
+            this._services[name] = new ServiceClass();
+            this._services[name].initialize(dbDriver);
+        }
+
+        return this._services[name];
     }
 });
 

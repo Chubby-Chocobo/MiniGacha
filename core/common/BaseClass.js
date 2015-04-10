@@ -37,23 +37,30 @@ BaseClass.subclass = (function(){
             var setter = properties.__lookupSetter__(property);
 
             if (getter || setter) {
-                // TODO: handle if needed in the future.
+                // TODO: maybe handle if needed in the future.
             } else {
-                var value = properties[property];
+                if (property[0] == "$") { // Static property
+                    property = property.slice(1);
 
-                var autoInheritedFuncs = ["initialize"];
-                if (_.contains(autoInheritedFuncs, property)) {
-                    var ancestorFunc = ancestorPrototype[property];
-                    if (ancestorFunc) {
-                        var derivedFunc = properties[property];
-                        value = function() {
-                            ancestorFunc.apply(this, arguments);
-                            derivedFunc.apply(this, arguments);
+                    NewClass[property] = value;
+                    NewClass.prototype[property] = value;
+                } else {
+                    var value = properties[property];
+
+                    var autoInheritedFuncs = ["initialize"];
+                    if (_.contains(autoInheritedFuncs, property)) {
+                        var ancestorFunc = ancestorPrototype[property];
+                        if (ancestorFunc) {
+                            var derivedFunc = properties[property];
+                            value = function() {
+                                ancestorFunc.apply(this, arguments);
+                                derivedFunc.apply(this, arguments);
+                            }
                         }
                     }
-                }
 
-                NewClass.prototype[property] = value;
+                    NewClass.prototype[property] = value;
+                }
             }
         }
 
