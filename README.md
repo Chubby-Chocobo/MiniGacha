@@ -1,0 +1,2 @@
+# MiniGacha
+Mini gacha game
