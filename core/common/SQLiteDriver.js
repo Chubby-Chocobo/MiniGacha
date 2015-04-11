@@ -47,16 +47,16 @@ module.exports = BaseClass.subclass({
 
     beginTransaction : function(callback) {
         logger.info("SQL: BEGIN TRANSACTION");
-        db.run("BEGIN", [], callback);
+        this._db.run("BEGIN", [], callback);
     },
 
     commit : function(callback) {
         logger.info("SQL: COMMIT");
-        this.run("COMMIT", [], callback);
+        this._db.run("COMMIT", [], callback);
     },
 
     rollback : function(callback) {
         logger.info("SQL: ROLLBACK");
-        this.run("ROLLBACK", [], callback);
+        this._db.run("ROLLBACK", [], callback);
     },
 });

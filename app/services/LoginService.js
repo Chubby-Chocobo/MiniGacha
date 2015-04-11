@@ -8,6 +8,7 @@ module.exports = BaseService.subclass({
         var UserModel    = getModel("UserModel");
         var email        = params.email;
         var password     = params.password;
+        var self         = this;
 
         async.auto({
             getUser : function(next, res) {
@@ -19,9 +20,7 @@ module.exports = BaseService.subclass({
                 var user = res.getUser;
                 if (user) {
                     if (user.password == password) {
-                        var mixed = user.email + user.password + (new Date()).toTimeString();
-                        var token = crypto.createHash('md5').update(mixed).digest("hex");
-                        user.auth_token = token;
+                        user.auth_token = self._generateAuthToken(user.email, user.password);
                         user.save(function(_err, _res) {
                             if (_err) {
                                 next(_err);
@@ -95,5 +94,49 @@ module.exports = BaseService.subclass({
 
             callback(null, res.checkUser);
         });
+    },
+
+    register : function (params, callback) {
+        var UserModel    = getModel("UserModel");
+        var email        = params.email;
+        var password     = params.password;
+        var self         = this;
+
+        var UserEntity = require("../entities/UserEntity");
+        var user = new UserEntity();
+        var now = Date.now();
+        user.initialize(UserModel, {
+            username        : email,
+            email           : email,
+            password        : password,
+            registered_at   : now,
+            zero_coin_at    : now,
+            auth_token      : self._generateAuthToken(email, password),
+        });
+
+        async.auto({
+            insertNewUser : function(next, res) {
+                UserModel.insert([user], next);
+            }
+        }, function (err, res) {
+            if (err) {
+                callback(err, {
+                    msg  : AppConstants.RESPONSE_MESSAGE.REGISTER.FAIL,
+                    data : user,
+                });
+                return;
+            }
+
+            callback(null, {
+                msg  : AppConstants.RESPONSE_MESSAGE.REGISTER.SUCCESS,
+                data : user,
+            });
+        });
+    },
+
+    _generateAuthToken : function(email, password) {
+        var mixed = email + password + Date.now();
+        var token = crypto.createHash('md5').update(mixed).digest("hex");
+        return token;
     }
 });

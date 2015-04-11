@@ -8,19 +8,20 @@ function onLoginResponseSuccess(data) {
 }
 
 function onLoginResponseError(data) {
-    console.log("onLoginResponseError");
-    console.log(data);
     var res;
     try {
         res = JSON.parse(data.responseText);
-        $("#login-notice").removeClass().addClass("error").text(res.msg);
+        if (res.code == 2) {
+            $("#login-notice").removeClass().addClass("info").html(res.msg);
+            $("#login-button").addClass("disappear");
+            $("#cancel-register-button").removeClass("disappear");
+            $("#accept-register-button").removeClass("disappear");
+        } else {
+            $("#login-notice").removeClass().addClass("error").html(res.msg);
+        }
     } catch (e) {
         console.log("onLoginResponseError parsing data error: " + e);
     }
-}
-
-function onLoginResponseComplete(data) {
-
 }
 
 function doLogin() {
@@ -49,6 +50,43 @@ function doLogin() {
         data        : $('#login-form').serialize(),
         success     : onLoginResponseSuccess,
         error       : onLoginResponseError,
-        complete    : onLoginResponseComplete,
+    });
+}
+
+function cancelRegister() {
+    $("#login-button").removeClass("disappear");
+    $("#cancel-register-button").addClass("disappear");
+    $("#accept-register-button").addClass("disappear");
+    $("#input-email").val("");
+    $("#input-password").val("");
+    $("#login-notice").text("");
+}
+
+function acceptRegister() {
+    var email    = $("#input-email").val();
+    var password = $("#input-password").val();
+
+    if (!email) {
+        $("#login-notice").removeClass().addClass("warning").text("Please input your email address.");
+        return;
+    }
+
+    if (!validateEmail(email)) {
+        $("#login-notice").removeClass().addClass("warning").text("Invalid email adress!");
+        return;
+    }
+
+    if (!password) {
+        $("#login-notice").removeClass().addClass("warning").text("Please input your password.");
+        return;
+    }
+
+    $.ajax({
+        url         : "/register",
+        type        : "post",
+        dataType    : "html",
+        data        : $('#login-form').serialize(),
+        success     : onLoginResponseSuccess,
+        error       : onLoginResponseError,
     });
 }

@@ -2,6 +2,10 @@
     font-size: 1.1rem;
 }
 
+.disappear {
+    display: none;
+}
+
 h1 {
     font-size: 2rem;
 }
@@ -20,6 +24,37 @@ h1 {
 
 .ac {
     text-align: center;
+}
+
+.common-btn {
+    width: 320px;
+    height: 44px;
+    background-color: rgb(96, 176, 68);
+    background-image: linear-gradient(rgb(138, 221, 109), rgb(96, 176, 68));
+    border: 0px;
+    border-radius: 5px;
+    color: white;
+    font-family: Helvetica;
+    font-weight: bold;
+}
+
+.common-btn.accept {
+    width: 155px;
+    margin-left: 5px;
+}
+
+.common-btn.cancel {
+    width: 155px;
+    background-image: linear-gradient(rgb(239, 75, 15), rgb(255, 0, 0));
+    margin-right: 5px;
+}
+
+.w320c {
+    width: 320px;
+    height: 100%;
+    left: 50%;
+    position: relative;
+    margin-left: -160px;
 }
 
 #login-form {
@@ -45,6 +80,7 @@ h1 {
 #login-notice {
     text-align: center;
     padding-top: 5px;
+    padding-bottom: 5px;
     font-family: "Times New Roman";
 }
 

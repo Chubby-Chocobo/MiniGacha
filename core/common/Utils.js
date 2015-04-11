@@ -16,5 +16,9 @@ module.exports = {
         return key.replace( /[a-z][A-Z]/g, function(matched) {
             return matched.charAt(0) + "_" + matched.charAt(1).toLowerCase();
         });
+    },
+
+    emailUsername : function(emailAddress) {
+        return emailAddress.match(/^(.+)@/)[1];
     }
 }

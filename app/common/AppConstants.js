@@ -17,7 +17,7 @@ module.exports = {
             },
             NOT_REGISTER : {
                 code : 2,
-                msg  : "This email is not registered yet.",
+                msg  : "This email is not registered yet.<br/> Do you want to register it now?",
             }
         },
         AUTHENTICATE : {
@@ -31,7 +31,14 @@ module.exports = {
             }
         },
         REGISTER : {
-
+            SUCCESS : {
+                code : 0,
+                msg  : "Registered successfully."
+            },
+            FAIL : {
+                code : 1,
+                msg  : "Register failed. Please try again."
+            }
         },
     }
 }
