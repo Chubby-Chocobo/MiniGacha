@@ -1,4 +1,10 @@
 module.exports = {
+    STARTED_COIN : 5000,
+    GACHA : {
+        TYPE : {
+
+        }
+    },
     RESPONSE_MESSAGE : {
         COMMON : {
             UNKNOWN_ERROR : {
@@ -40,5 +46,5 @@ module.exports = {
                 msg  : "Register failed. Please try again."
             }
         },
-    }
+    },
 }

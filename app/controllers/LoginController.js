@@ -13,10 +13,13 @@ var LoginController = BaseController.subclass({
 
     _main : function(req, res) {
         var LoginService = getService("LoginService");
-        var email        = req.session.email;
+        var userId       = req.session.userId;
         var authToken    = req.session.authToken;
 
-        if (!email || !authToken) {
+        userId = 6;
+        authToken = "30448947231829981f318761d129f477";
+
+        if (!userId || !authToken) {
             res.render("main");
             return;
         }
@@ -24,7 +27,7 @@ var LoginController = BaseController.subclass({
         async.auto({
             authenticate : function(next, res) {
                 LoginService.authenticate({
-                    email     : email,
+                    userId    : userId,
                     authToken : authToken,
                 }, next);
             },
@@ -34,11 +37,13 @@ var LoginController = BaseController.subclass({
             }
 
             var msg  = ret.authenticate.msg;
-            var user = ret.authenticate.data;
+            var user = ret.authenticate.user;
+            var data = ret.authenticate.data;
 
             if (msg == AppConstants.RESPONSE_MESSAGE.AUTHENTICATE.SUCCESS) {
                 res.render("main", {
-                    user : user.getData()
+                    user : user.getData(),
+                    data : data
                 });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.AUTHENTICATE.FAIL) {
                 res.status(401);
@@ -79,9 +84,10 @@ var LoginController = BaseController.subclass({
             }
 
             var msg  = ret.login.msg;
-            var user = ret.login.data;
+            var user = ret.login.user;
 
             if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.SUCCESS) {
+                req.session.userId      = user.id;
                 req.session.email       = user.email;
                 req.session.authToken   = user.auth_token;
                 res.render("sub/home", {
@@ -126,7 +132,7 @@ var LoginController = BaseController.subclass({
             }
 
             var msg  = ret.register.msg;
-            var user = ret.register.data;
+            var user = ret.register.user;
 
             if (msg == AppConstants.RESPONSE_MESSAGE.REGISTER.SUCCESS) {
                 req.session.email       = user.email;

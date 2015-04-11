@@ -26,7 +26,7 @@ TABLE_MAPPING = {
         "gacha_id"              : "int",
         "wait_interval"         : "int"
     },
-    "gacha_regular_weight" : {
+    "gacha_weight" : {
         "gacha_id"              : "int",
         "item_id"               : "int",
         "weight"                : "int"

@@ -22,8 +22,28 @@ h1 {
     color : red;
 }
 
+.fn10 {
+    font-size: 1rem;
+}
+
+.fn9 {
+    font-size: 0.9rem;
+}
+
+.fn8 {
+    font-size: 0.8rem;
+}
+
 .ac {
     text-align: center;
+}
+
+.al {
+    text-align: left;
+}
+
+.ar {
+    text-align: right;
 }
 
 .common-btn {
@@ -93,6 +113,48 @@ h1 {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     font-family: Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
+}
+
+.gacha-banner {
+    width: 320px;
+    height: 64px;
+    border-radius: 4px;
+    color: white;
+    font-family: Helvetica;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: center;
+    line-height: 64px;
+    position: relative;
+}
+
+.gacha-banner.gacha-1 {
+    background-color: rgb(96, 176, 68);
+    background-image: linear-gradient(rgb(138, 221, 109), rgb(96, 176, 68));
+}
+
+.gacha-banner.gacha-2 {
+    background-color: rgb(104, 68, 176);
+    background-image: linear-gradient(rgb(116, 109, 221), rgb(95, 68, 176));
+}
+
+.gacha-banner.gacha-3 {
+    background-color: rgb(234, 21, 110);
+    background-image: linear-gradient(rgb(228, 24, 148), rgb(247, 9, 73));
+}
+
+.gacha-markup {
+    text-align: right;
+    position: absolute;
+    top: 47px;
+    right: 5px;
+    float: right;
+    vertical-align: bottom;
+    line-height: normal;
+    font-size: 0.9rem;
+    font-weight: normal;
+    color: black;
 }
 
 #content {

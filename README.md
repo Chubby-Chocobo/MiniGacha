@@ -10,6 +10,14 @@
 ### Install node modules
     $ make install-modules
 
+### Install python (to run master data generator)
+    Install python 2.7
+    https://www.python.org/downloads/
+    Install module to read/write excel
+    https://pypi.python.org/pypi/xlrd
+    https://pypi.python.org/pypi/xlwt
+    https://pypi.python.org/pypi/xlutils
+
 ## Development
 ### Switch config for current environment:
     $ make config-dev

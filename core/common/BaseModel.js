@@ -157,6 +157,20 @@ module.exports = BaseClass.subclass({
         });
     },
 
+    getAll : function(callback) {
+        this.all({
+            where : "1",
+        }, callback);
+    },
+
+    // TODO: this method should separate to other interface
+    // since there're tables that don't have user_id column
+    getAllOfUser : function(userId, callback) {
+        this.all({
+            where : " user_id=" + userId,
+        }, callback);
+    },
+
     get : function(options, callback) {
         var self = this;
         async.auto({

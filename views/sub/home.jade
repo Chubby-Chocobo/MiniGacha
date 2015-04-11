@@ -1,2 +1,14 @@
-h2.ac Mini Gacha Game Home Page
-div.ac Welcome home, #{user.email}
+script(type='text/javascript').
+    var user = !{JSON.stringify(user)};
+    var data = !{JSON.stringify(data)};
+script(src='js/home.js')
+div.ar
+    span.current-time.fn9
+div.ac Welcome back, #{user.email}
+div.ac Your balance:&nbsp
+    span.current-coin aaa
+div.w320c
+    each gacha, i in data.gacha.gachas
+        div(class='gacha-banner gacha-#{gacha.id}' onclick='drawGacha(#{gacha.id});')
+            span(class='gacha-name') #{gacha.name}
+            span(class='gacha-markup' id='gacha-markup-#{gacha.id}')

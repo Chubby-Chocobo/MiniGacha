@@ -13,9 +13,11 @@ fs                  = require("fs");
 logger              = log4js.getLogger();
 Const               = require("./common/Const");
 Utils               = require("./common/Utils");
+LocalCache          = require("./common/LocalCache");
 
 var BaseClass       = require("./common/BaseClass");
 var SQLiteManager   = require("./common/SQLiteManager");
+var MasterDataCache = require("./common/MasterDataCache");
 var Config          = require("../config/Config");
 
 var AServer = BaseClass.subclass({
@@ -25,6 +27,7 @@ var AServer = BaseClass.subclass({
         this._initApp(data);
         this._initServer(data);
         this._initDBManager(data);
+        this._loadMasterDataToCache();
     },
 
     _initApp : function(data) {
@@ -64,6 +67,13 @@ var AServer = BaseClass.subclass({
         } else {
             logger.error(this.classname + "::_initDBManager does not support db type: " + data.dbType);
         }
+    },
+
+    _loadMasterDataToCache : function() {
+        // TODO: make this works
+        // call this everytime update database as well
+        this._masterDataCache = new MasterDataCache();
+        this._masterDataCache.initialize();
     },
 
     addController : function(path, controller) {

@@ -36,5 +36,10 @@ module.exports = BaseClass.subclass({
 
     save : function(next) {
         this._model.update(this, next);
+    },
+
+    $extractDataFromEntities : function(entities) {
+        return _.pluck(entities, "_data");
     }
+
 });
