@@ -77,6 +77,7 @@ var AServer = BaseClass.subclass({
     },
 
     addController : function(path, controller) {
+        logger.info(controller.classname + " will handle [" + path + "]...");
         this.myApp.use(path, controller.getRouter());
     },
 

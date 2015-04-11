@@ -15,13 +15,41 @@ module.exports = BaseService.subclass({
     },
 
     getUserItem : function(userId, callback) {
-        var UserItemModel      = getModel("UserItemModel");
-        var self               = this;
+        var UserItemModel  = getModel("UserItemModel");
+        var self           = this;
 
         async.auto({
             userItem : function(next, res) {
                 UserItemModel.getAllOfUser(userId, next);
             },
+        }, callback);
+    },
+
+    add : function(params, callback) {
+        var userId          = params.userId;
+        var itemId          = params.itemId;
+        var num             = params.num;
+        var UserItemModel   = getModel("UserItemModel");
+        var self            = this;
+
+        async.auto({
+            userItem : function(next, res) {
+                UserItemModel.get({
+                    where : "user_id=" + userId + " AND item_id=" + itemId
+                }, next);
+            },
+            add : ["userItem", function(next, res) {
+                if (!res.userItem) {
+                    UserItemModel.insertWithData([{
+                        user_id : userId,
+                        item_id : itemId,
+                        num     : num
+                    }], next);
+                } else {
+                    res.userItem.num += num;
+                    res.userItem.save(next);
+                }
+            }]
         }, callback);
     }
 

@@ -7,7 +7,7 @@ module.exports = BaseClass.subclass({
     classname : "SQLiteDriver",
 
     initialize : function(filename, callback) {
-        logger.trace(this.classname + "::initialize");
+        logger.info(this.classname + "::initialize");
         var self = this;
 
         async.auto({

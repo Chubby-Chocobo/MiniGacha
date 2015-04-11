@@ -143,7 +143,7 @@ module.exports = BaseService.subclass({
             email           : email,
             password        : password,
             registered_at   : now,
-            zero_coin_at    : now - AppConstants.STARTED_COIN,
+            zero_coin_at    : now - AppConstants.STARTED_COIN * AppConstants.COIN_PER_SECOND,
             auth_token      : self._generateAuthToken(email, password),
         });
 

@@ -77,7 +77,7 @@ function drawGacha(gachaId) {
         url         : "/gacha/draw",
         type        : "post",
         dataType    : "html",
-        data        : gachaId,
+        data        : "gacha_id=" + gachaId,
         success     : onDrawSuccess,
         error       : onDrawError,
     });

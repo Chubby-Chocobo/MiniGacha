@@ -4,7 +4,7 @@ var LoginController = BaseController.subclass({
     classname : "LoginController",
 
     initialize : function() {
-        logger.trace(this.classname + "::initialize");
+        logger.info(this.classname + "::initialize");
 
         this._router.get('/', this._main.bind(this));
         this._router.post('/login', this._login.bind(this));
@@ -13,11 +13,11 @@ var LoginController = BaseController.subclass({
 
     _main : function(req, res) {
         var LoginService = getService("LoginService");
+        req.session.userId = 10;
+        req.session.authToken = "c741359515a8585e182c6137f674d609";
+        // TODO: do authenticate with all requests
         var userId       = req.session.userId;
         var authToken    = req.session.authToken;
-
-        userId = 6;
-        authToken = "30448947231829981f318761d129f477";
 
         if (!userId || !authToken) {
             res.render("main");
@@ -85,13 +85,15 @@ var LoginController = BaseController.subclass({
 
             var msg  = ret.login.msg;
             var user = ret.login.user;
+            var data = ret.login.data;
 
             if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.SUCCESS) {
                 req.session.userId      = user.id;
                 req.session.email       = user.email;
                 req.session.authToken   = user.auth_token;
                 res.render("sub/home", {
-                    user : user.getData()
+                    user : user.getData(),
+                    data : data
                 });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.WRONG_PASSWORD) {
                 res.status(401);
@@ -133,12 +135,14 @@ var LoginController = BaseController.subclass({
 
             var msg  = ret.register.msg;
             var user = ret.register.user;
+            var data = ret.register.data;
 
             if (msg == AppConstants.RESPONSE_MESSAGE.REGISTER.SUCCESS) {
                 req.session.email       = user.email;
                 req.session.authToken   = user.auth_token;
                 res.render("sub/home", {
-                    user : user.getData()
+                    user : user.getData(),
+                    data : data
                 });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.REGISTER.FAIL) {
                 res.status(401);

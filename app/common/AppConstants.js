@@ -1,8 +1,13 @@
 module.exports = {
-    STARTED_COIN : 5000,
+    STARTED_COIN : 5000 * 1000,
+    COIN_PER_SECOND : 1,
     GACHA : {
         TYPE : {
-
+            NORMAL : "normal",
+            BOX    : "box"
+        },
+        BOX_RESET_CONDITION : {
+            DAILY  : "daily"
         }
     },
     RESPONSE_MESSAGE : {

@@ -47,6 +47,7 @@ function doLogin() {
         url         : "/login",
         type        : "post",
         dataType    : "html",
+        // TODO: send hash of input password instead of raw password for security if needed.
         data        : $('#login-form').serialize(),
         success     : onLoginResponseSuccess,
         error       : onLoginResponseError,

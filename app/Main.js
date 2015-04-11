@@ -19,10 +19,13 @@ function boot() {
 
     logger.info("Application initialized. Creating routes table...");
 
-    for (var path in Routes) {
-        var controller = new Routes[path]();
+    for (var category in Routes) {
+        var controller = new Routes[category].controller();
         controller.initialize();
-        global.aserver.app.addController(path, controller);
+        for (var i in Routes[category].paths) {
+            var path = Routes[category].paths[i];
+            global.aserver.app.addController(path, controller);
+        }
     }
 
     getModel = function(name) {

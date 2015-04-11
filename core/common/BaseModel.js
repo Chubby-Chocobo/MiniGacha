@@ -57,7 +57,10 @@ module.exports = BaseClass.subclass({
     },
 
     _whereEntityIs : function(entity) {
-        var data = entity.getData();
+        var data = entity;
+        if (entity instanceof BaseEntity) {
+            data = entity.getData();
+        }
         var where = " where (";
         var conds = [];
         for (var i in this.primaryKeys) {
@@ -102,7 +105,10 @@ module.exports = BaseClass.subclass({
 
     _setValuesClause : function(entity) {
         var t = [];
-        var data = entity.getData();
+        var data = entity;
+        if (entity instanceof BaseEntity) {
+            data = entity.getData();
+        }
         for (var key in data) {
             t.push(key + "=" + this._getStringQueryValue(data[key]));
         }
@@ -116,6 +122,27 @@ module.exports = BaseClass.subclass({
         var entity = new this.entity();
         entity.initialize(this, data);
         return entity;
+    },
+
+    insertWithData : function(data, callback) {
+        if (!data || !data.length) {
+            callback();
+            return;
+        }
+
+        var columns = _.keys(data[0]);
+        var sql = "INSERT INTO " + this.getTableName();
+        sql += this._columns(columns);
+        sql += "VALUES";
+
+        for (var i = 0; i < data.length; i++) {
+            sql += this._values(_.values(data[i]));
+            if (i < data.length - 1) {
+                sql += ", "
+            }
+        }
+
+        this._dbDriver.run(sql, callback);
     },
 
     insert : function(entities, callback) {
@@ -196,9 +223,33 @@ module.exports = BaseClass.subclass({
     },
 
     update : function(entity, callback) {
+        // TODO: optimize by updating changed values only.
         var sql = "UPDATE " + this.getTableName()
                 + " SET " + this._setValuesClause(entity)
                 + this._whereEntityIs(entity);
         this._dbDriver.run(sql, callback);
     },
+
+    insertOrUpdate : function(entity, callback) {
+        var self = this;
+
+        async.auto({
+            current : function(next, res) {
+                self.get({
+                    where : self._whereEntityIs(entity).slice(6),
+                }, next);
+            },
+            upsert : ["current", function(next, res) {
+                if (!res.current) {
+                    if (entity instanceof BaseEntity) {
+                        self.insert([entity], next);
+                    } else {
+                        self.insertWithData([entity], next);
+                    }
+                } else {
+                    self.update(entity, next);
+                }
+            }]
+        }, callback);
+    }
 });
