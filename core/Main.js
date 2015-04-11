@@ -3,6 +3,8 @@ express             = require("express");
 morgan              = require("morgan");
 log4js              = require("log4js");
 cookieParser        = require("cookie-parser");
+cookieSession       = require("cookie-session");
+session             = require("express-session");
 bodyParser          = require("body-parser");
 path                = require("path");
 _                   = require("underscore");
@@ -14,6 +16,7 @@ Utils               = require("./common/Utils");
 
 var BaseClass       = require("./common/BaseClass");
 var SQLiteManager   = require("./common/SQLiteManager");
+var Config          = require("../config/Config");
 
 var AServer = BaseClass.subclass({
     classname : "Aserver",
@@ -31,8 +34,13 @@ var AServer = BaseClass.subclass({
         app.set("view engine", "jade");
         app.set("port", data.port);
         app.use(morgan('dev'));
-        app.use(bodyParser.urlencoded({ extended: false }));
         app.use(cookieParser());
+        app.use(session({
+            secret: Config.secret,
+            resave: true,
+            saveUninitialized: true,
+        }));
+        app.use(bodyParser.urlencoded({ extended: false }));
         app.use(express.static(path.join(__dirname, '../public')));
 
         this.myApp = app;

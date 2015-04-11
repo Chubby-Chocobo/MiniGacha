@@ -15,7 +15,9 @@ var BaseController = BaseClass.subclass({
     },
 
     logRequestInfo : function(req, res, next) {
-        logger.info(this.classname + "::logRequestInfo params=" + JSON.stringify(req.params));
+        logger.info(this.classname + "::logRequestInfo body=" + JSON.stringify(req.body)
+                                    + ", params=" + JSON.stringify(req.params)
+                                    + ", session=" + JSON.stringify(req.session));
         if (next) {
             next();
         }

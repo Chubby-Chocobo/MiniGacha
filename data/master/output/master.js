@@ -2052,5 +2052,6 @@ module.exports={
       "name": "Item 100", 
       "rarity": 1
     }
-  ]
+  ], 
+  "text": []
 }

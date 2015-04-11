@@ -39,14 +39,14 @@ BaseClass.subclass = (function(){
             if (getter || setter) {
                 // TODO: maybe handle if needed in the future.
             } else {
+                var value = properties[property];
+
                 if (property[0] == "$") { // Static property
                     property = property.slice(1);
 
                     NewClass[property] = value;
                     NewClass.prototype[property] = value;
                 } else {
-                    var value = properties[property];
-
                     var autoInheritedFuncs = ["initialize"];
                     if (_.contains(autoInheritedFuncs, property)) {
                         var ancestorFunc = ancestorPrototype[property];

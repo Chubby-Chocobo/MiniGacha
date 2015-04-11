@@ -35,7 +35,7 @@ async.auto({
             var entities = [];
             for (var i = 0; i < master[table].length; i++) {
                 var entity = new EntityClass();
-                entity.initialize(master[table][i]);
+                entity.initialize(model, master[table][i]);
                 entities.push(entity);
             }
             model.truncate(function(_err, _res) {

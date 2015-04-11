@@ -1,0 +1,64 @@
+* {
+    font-size: 1.1rem;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+.info {
+    color : green;
+}
+
+.warning {
+    color : orange;
+}
+
+.error {
+    color : red;
+}
+
+.ac {
+    text-align: center;
+}
+
+#login-form {
+    width: 320px;
+    height: 100%;
+    left: 50%;
+    position: relative;
+    margin-left: -160px;
+}
+
+#login-button {
+    width: 320px;
+    height: 44px;
+    background-color: rgb(96, 176, 68);
+    background-image: linear-gradient(rgb(138, 221, 109), rgb(96, 176, 68));
+    border: 0px;
+    border-radius: 5px;
+    color: white;
+    font-family: Helvetica;
+    font-weight: bold;
+}
+
+#login-notice {
+    text-align: center;
+    padding-top: 5px;
+    font-family: "Times New Roman";
+}
+
+.form-control {
+    width: 320px;
+    height: 44px;
+    border-radius: 5px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    font-family: Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
+}
+
+#content {
+
+}

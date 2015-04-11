@@ -40,6 +40,10 @@ TABLE_MAPPING = {
         "gacha_id"              : "int",
         "item_id"               : "int",
         "num"                   : "int"
+    },
+    "text" : {
+        "key"                   : "text",
+        "value"                 : "text"
     }
 }
 

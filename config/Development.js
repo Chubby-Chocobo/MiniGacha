@@ -5,4 +5,5 @@ module.exports = {
     dbType  : Const.DB_TYPE.SQLITE,
     dbName  : "MiniGacha.db",
     debug   : true,
+    secret  : "ABC123456"
 };

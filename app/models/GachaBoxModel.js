@@ -4,4 +4,6 @@ module.exports = BaseModel.subclass({
     classname : "GachaBoxModel",
     tablename : "gacha_box",
 
+    $primaryKeys : ["gacha_id"],
+
 });

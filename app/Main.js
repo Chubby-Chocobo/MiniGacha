@@ -1,6 +1,7 @@
-var AServer = require("../core/Main");
-var Config  = require("../config/Config");
-var Routes  = require("../config/Routes");
+Config          = require("../config/Config");
+Routes          = require("../config/Routes");
+AppConstants    = require("../app/common/AppConstants");
+AServer         = require("../core/Main");
 
 function boot() {
     logger.info("Start booting application...");
