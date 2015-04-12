@@ -106,9 +106,11 @@ var LoginController = BaseController.subclass({
                     data : data
                 });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.WRONG_PASSWORD) {
-                res.redirect("/");
+                res.status(401);
+                res.send(msg);
             } else if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.NOT_REGISTER) {
-                res.redirect("/");
+                res.status(401);
+                res.send(msg);
             } else {
                 logger.error("LoginController::_login unkonwn message: " + JSON.stringify(msg));
                 res.status(500);
