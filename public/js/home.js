@@ -294,7 +294,7 @@ function onDrawSuccess(data) {
                     $("#item-got").removeClass("disappear");
                 });
                 notice += items.join(", ");
-                $("#gacha-notice").text(notice);
+                $("#gacha-notice").removeClass().addClass("info").text(notice);
             }
         }
     } catch (e) {
@@ -305,6 +305,7 @@ function onDrawSuccess(data) {
 function onDrawError(data) {
     console.log("onDrawError");
     console.log(data);
+    $("#gacha-notice").removeClass().addClass("error").text(data.responseText);
 }
 
 function drawGacha(gachaId) {

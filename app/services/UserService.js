@@ -8,6 +8,8 @@ module.exports = BaseService.subclass({
         var num         = params.num;
         var UserModel   = getModel("UserModel");
 
+        var now = Date.now();
+
         async.auto({
             user : function(next, res) {
                 UserModel.get({
@@ -15,8 +17,13 @@ module.exports = BaseService.subclass({
                 }, next);
             },
             minusCoin : ["user", function(next, res) {
-                res.user.zero_coin_at += num * AppConstants.COIN_PER_SECOND * 1000;
-                res.user.save(next);
+                var minusTime = num * AppConstants.COIN_PER_SECOND * 1000;
+                if (res.user.zero_coin_at + minusTime > now) {
+                    next("You do not have enough coin.");
+                } else {
+                    res.user.zero_coin_at += minusTime;
+                    res.user.save(next);
+                }
             }]
         }, function(err, res) {
             callback (err, res.user);

@@ -36,6 +36,8 @@ var GachaController = BaseController.subclass({
             if (err) {
                 logger.error(err);
                 GachaService.rollback();
+                res.status(400);
+                res.send(err);
                 return;
             }
             var user = ret.draw.user.getData();
