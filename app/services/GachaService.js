@@ -122,6 +122,14 @@ module.exports = BaseService.subclass({
                     num    : 1
                 }, next);
             }],
+            updateUserGacha : ["doDraw", function(next, res) {
+                UserGachaModel.insertWithData({
+                    user_id     : userId,
+                    gacha_id    : gachaId,
+                    item_id     : res.doDraw.id,
+                    created_at  : now
+                }, next);
+            }],
             // Re-query to get new data since there're 2 cases in minusUserCoin flow.
             // TODO: can be refactored to a better flow
             user : ["minusUserCoin", function(next, res) {
@@ -143,12 +151,8 @@ module.exports = BaseService.subclass({
         var self                    = this;
         var GachaModel              = getModel("GachaModel");
         var GachaFreeModel          = getModel("GachaFreeModel");
-        var GachaBoxModel           = getModel("GachaBoxModel");
-        var GachaBoxContentModel    = getModel("GachaBoxContentModel");
         var GachaWeightModel        = getModel("GachaWeightModel");
         var UserGachaModel          = getModel("UserGachaModel");
-        var UserBoxGachaModel       = getModel("UserBoxGachaModel");
-        var UserFreeGachaModel      = getModel("UserFreeGachaModel");
         var ItemModel               = getModel("ItemModel");
 
         async.auto({
@@ -179,6 +183,11 @@ module.exports = BaseService.subclass({
         var GachaWeightModel        = getModel("GachaWeightModel");
         var UserGachaModel          = getModel("UserGachaModel");
         var UserBoxGachaModel       = getModel("UserBoxGachaModel");
-        var UserFreeGachaModel      = getModel("UserFreeGachaModel");
+
+        async.auto({
+
+        }, function(err, res) {
+
+        });
     }
 });

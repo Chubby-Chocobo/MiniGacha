@@ -151,6 +151,13 @@ module.exports = BaseService.subclass({
             insertNewUser : function(next, res) {
                 UserModel.insert([user], next);
             },
+            // Ugly flow. Should got userId via a sequence before insert.
+            // TODO: refactor
+            updatedUser : ["insertNewUser", function(next, res) {
+                UserModel.get({
+                    where : "email='" + email + "'",
+                }, next);
+            }],
             data : function(next, res) {
                 self._getDataToRenderHome(-1, next);
             },
@@ -158,7 +165,7 @@ module.exports = BaseService.subclass({
             if (err) {
                 callback(err, {
                     msg  : AppConstants.RESPONSE_MESSAGE.REGISTER.FAIL,
-                    user : user,
+                    user : res.updatedUser,
                     data : null,
                 });
                 return;
@@ -166,7 +173,7 @@ module.exports = BaseService.subclass({
 
             callback(null, {
                 msg  : AppConstants.RESPONSE_MESSAGE.REGISTER.SUCCESS,
-                user : user,
+                user : res.updatedUser,
                 data : res.data
             });
         });

@@ -1,8 +1,7 @@
 CREATE TABLE `user_gacha` (
+    `id`    INTEGER PRIMARY KEY AUTOINCREMENT,
     `user_id`   INTEGER NOT NULL,
     `gacha_id`  INTEGER NOT NULL,
-    `draw_count`    INTEGER NOT NULL,
-    `item_count`    INTEGER NOT NULL,
-    `updated_at`    INTEGER NOT NULL,
-    PRIMARY KEY(user_id,gacha_id)
+    `item_id`   INTEGER NOT NULL,
+    `created_at`    INTEGER NOT NULL
 );

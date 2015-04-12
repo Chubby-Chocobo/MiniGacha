@@ -23,3 +23,7 @@ update-data:
 update-db:
 	make generate-data
 	make update-data
+
+init-db:
+	make load-schema
+	make update-db

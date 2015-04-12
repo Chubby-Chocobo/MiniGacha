@@ -147,6 +147,12 @@ var LoginController = BaseController.subclass({
             var user = ret.register.user;
             var data = ret.register.data;
 
+            logger.info(user);
+
+            req.session.userId      = user.id;
+            req.session.email       = user.email;
+            req.session.authToken   = user.auth_token;
+
             if (msg == AppConstants.RESPONSE_MESSAGE.REGISTER.SUCCESS) {
                 req.session.email       = user.email;
                 req.session.authToken   = user.auth_token;
