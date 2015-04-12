@@ -18,6 +18,8 @@ module.exports = BaseService.subclass({
                 res.user.zero_coin_at += num * AppConstants.COIN_PER_SECOND * 1000;
                 res.user.save(next);
             }]
-        }, callback);
+        }, function(err, res) {
+            callback (err, res.user);
+        });
     }
 });

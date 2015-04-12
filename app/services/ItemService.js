@@ -50,7 +50,19 @@ module.exports = BaseService.subclass({
                     res.userItem.save(next);
                 }
             }]
-        }, callback);
+        }, function(err, res) {
+            if (res.userItem) {
+                callback(err, res.userItem.getData());
+            } else {
+                // Ugly trick since insert query doesn't return data
+                // TODO: refactor at model to return data
+                callback(err, {
+                    user_id : userId,
+                    item_id : itemId,
+                    num     : num
+                });
+            }
+        });
     }
 
 });

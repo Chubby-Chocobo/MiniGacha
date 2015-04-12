@@ -13,9 +13,11 @@ var LoginController = BaseController.subclass({
 
     _main : function(req, res) {
         var LoginService = getService("LoginService");
-        req.session.userId = 10;
-        req.session.authToken = "c741359515a8585e182c6137f674d609";
-        // TODO: do authenticate with all requests
+
+        // For debug only
+        // req.session.userId = 10;
+        // req.session.authToken = "c741359515a8585e182c6137f674d609";
+
         var userId       = req.session.userId;
         var authToken    = req.session.authToken;
 

@@ -7,8 +7,10 @@ div.ar
 div.ac Welcome back, #{user.email}
 div.ac Your balance:&nbsp
     span.current-coin aaa
-div.w320c
+div.w320c#gacha-view
     each gacha, i in data.gacha.gachas
         div(class='gacha-banner gacha-#{gacha.id}' onclick='drawGacha(#{gacha.id});')
             span(class='gacha-name') #{gacha.name}
             span(class='gacha-markup' id='gacha-markup-#{gacha.id}')
+    div#gacha-notice.info
+div.w320c#inventory-view.disappear

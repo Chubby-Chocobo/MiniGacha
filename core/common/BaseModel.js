@@ -241,6 +241,7 @@ module.exports = BaseClass.subclass({
             },
             upsert : ["current", function(next, res) {
                 if (!res.current) {
+                    // TODO : refactor this. Data type should be unified
                     if (entity instanceof BaseEntity) {
                         self.insert([entity], next);
                     } else {
@@ -250,6 +251,8 @@ module.exports = BaseClass.subclass({
                     self.update(entity, next);
                 }
             }]
-        }, callback);
+        }, function(err, res) {
+            callback(err, entity);
+        });
     }
 });

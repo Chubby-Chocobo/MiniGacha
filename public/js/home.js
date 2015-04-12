@@ -3,66 +3,222 @@ var Config = {
     UI_UPDATE_INTERVAL  : 1000,
 };
 
-var global = {
+// TODO: refactor to a more generic and convenient caching mechanism.
+var Cache = function(name, primaryKeys) {
+    this.name = name;
+    this.primaryKeys = primaryKeys;
+    this.data = {};
+};
+Cache.prototype.isValidData = function(data) {
+    for (var i = 0; i < this.primaryKeys.length; i++) {
+        if (data[this.primaryKeys[i]] === null ||
+            data[this.primaryKeys[i]] === undefined) {
+            return false;
+        }
+    }
+    return true;
+}
+Cache.prototype.getHashKey = function(data) {
+    var hash = "";
+    for (var i = 0; i < this.primaryKeys.length; i++) {
+        hash += "_" + data[this.primaryKeys[i]];
+    }
+    return hash;
+}
+Cache.prototype.updateOne = function(data) {
+    console.log(this.name + "::updateOne " + JSON.stringify(data));
+    if (!this.isValidData(data)) {
+        console.log(this.name + "::updateOne invalid data=" + JSON.stringify(data));
+        return;
+    }
+
+    var hash = this.getHashKey(data);
+    this.data[hash] = data;
+};
+Cache.prototype.update = function(arr) {
+    _.each(arr, function(data) {
+        this.updateOne(data);
+    }.bind(this));
+};
+Cache.prototype.removeOne = function(data) {
+    console.log(this.name + "::removeOne " + JSON.stringify(data));
+    if (!this.isValidData(data)) {
+        console.log(this.name + "::removeOne invalid data=" + JSON.stringify(data));
+        return;
+    }
+
+    var hash = this.getHashKey(data);
+    delete this.data[hash];
+};
+Cache.prototype.remove = function(arr) {
+    _.each(arr, function(data) {
+        this.removeOne(data);
+    }.bind(this));
+};
+Cache.prototype.getArrayData = function() {
+    return _.values(this.data);
+};
+Cache.prototype.getBy = function(obj) {
+    var hash = this.getHashKey(obj);
+    return this.data[hash];
+};
+
+var cache = {
     lastUpdate       : 0,
     fromLastUIUpdate : 0,
+    user             : {},
+    gachas           : new Cache("GachaCache", ["id"]),
+    freeGachas       : new Cache("FreeGachaCache", ["gacha_id"]),
+    boxGachas        : new Cache("BoxGachaCache", ["gacha_id"]),
+    userGachas       : new Cache("UserGachaCache", ["gacha_id", "user_id"]),
+    userFreeGachas   : new Cache("UserFreeGachaCache", ["gacha_id", "user_id"]),
+    userBoxGachas    : new Cache("UserBoxGachaCache", ["gacha_id", "user_id"]),
+    items            : new Cache("ItemCache", ["id"]),
+    userItems        : new Cache("UserItemCache", ["user_id", "item_id"]),
 };
 
 $(document).ready(function() {
     init();
 });
 
-function onUpdate(delta) {
-    global.fromLastUIUpdate += delta;
-    if (global.fromLastUIUpdate > Config.UI_UPDATE_INTERVAL) {
-        updateCurrentTime();
-        updateCurrentCoin();
-        markUpFreeGachas();
-        markUpBoxGachas();
-        global.fromLastUIUpdate -= Config.UI_UPDATE_INTERVAL;
+function onUpdate(now, delta) {
+    cache.fromLastUIUpdate += delta;
+    if (cache.fromLastUIUpdate > Config.UI_UPDATE_INTERVAL) {
+        updateCurrentTime(now, delta);
+        updateCurrentCoin(now, delta);
+        markUpFreeGachas(now, delta);
+        markUpBoxGachas(now, delta);
+        cache.fromLastUIUpdate -= Config.UI_UPDATE_INTERVAL;
     }
 }
 
 function update() {
     var now = Date.now();
     var delta = 0;
-    if (global.lastUpdate) {
-        delta = now - global.lastUpdate;
+    if (cache.lastUpdate) {
+        delta = now - cache.lastUpdate;
     }
-    global.lastUpdate = now;
+    cache.lastUpdate = now;
 
-    onUpdate(delta);
+    onUpdate(now, delta);
 }
 
 function init() {
+    cache.user = user;
+    cache.gachas.update(data.gacha.gachas);
+    cache.freeGachas.update(data.gacha.freeGachas);
+    cache.boxGachas.update(data.gacha.boxGachas);
+    cache.items.update(data.item.items);
+    cache.userGachas.update(data.userGacha.userGacha);
+    cache.userFreeGachas.update(data.userGacha.userFreeGacha);
+    cache.userBoxGachas.update(data.userGacha.userBoxGacha);
+
     setInterval(update, Config.UPDATE_INTERVAL);
 }
 
-function updateCurrentTime() {
-    var now = (new Date()).toTimeString();
-    $(".current-time").text(now);
+function updateCurrentTime(now, delta) {
+    var nowStr = (new Date()).toTimeString();
+    $(".current-time").text(nowStr);
 }
 
-function updateCurrentCoin() {
-    var now = Date.now();
-    $(".current-coin").text(Math.floor((now - user.zero_coin_at)/1000));
+function updateCurrentCoin(now, delta) {
+    $(".current-coin").text(Math.floor((now - cache.user.zero_coin_at)/1000));
 }
 
-function markUpFreeGachas() {
-    var freeGachas = data.gacha.freeGachas;
+function markUpFreeGachas(now, delta) {
+    var freeGachas = cache.freeGachas.getArrayData();
+    if (!freeGachas || !freeGachas.length) {
+        return;
+    }
     _.each(freeGachas, function(freeGacha) {
         var gachaId = freeGacha.gacha_id;
-        $("#gacha-markup-" + gachaId).text("abc123");
+        var waitInterval = freeGacha.wait_interval * 1000;
+        if (!cache.userFreeGachas) {
+            $("#gacha-markup-" + gachaId).text("This gacha is free now.");
+            return;
+        }
+        var userFreeGachas = cache.userFreeGachas.getArrayData();
+        var userFreeGacha = _.find(userFreeGachas, function(e) {
+            return e.gacha_id == gachaId;
+        });
+        if (!userFreeGacha) {
+            $("#gacha-markup-" + gachaId).text("This gacha is free now.");
+        } else {
+            if (now - userFreeGacha.last_draw_at > waitInterval) {
+                $("#gacha-markup-" + gachaId).text("This gacha is free now.");
+            } else{
+                var timeLeft = Math.floor((waitInterval - (now - userFreeGacha.last_draw_at))/1000);
+                $("#gacha-markup-" + gachaId).text("This gacha is free in " + timeLeft);
+            }
+        }
     });
 }
 
-function markUpBoxGachas() {
+function markUpBoxGachas(now, delta) {
+    var boxGachas = cache.boxGachas;
+    if (!boxGachas || !boxGachas.length) {
+        return;
+    }
+}
 
+function updateClientData(res) {
+    console.log("updating client data...");
+    console.log(res);
+
+    if (res.updated && res.updated.user) {
+        cache.user = res.updated.user;
+    }
+
+    var keys = [
+        "items",
+        "userItems",
+        "gachas",
+        "freeGachas",
+        "boxGachas",
+        "userGachas",
+        "userFreeGachas",
+        "userBoxGachas",
+    ];
+
+    _.each(keys, function(key) {
+        if (res.updated) {
+            var arr = res.updated[key];
+            if (arr && arr.length) {
+                cache[key].update(arr);
+            }
+        }
+        if (res.deleted) {
+            var arr = res.deleted[key];
+            if (arr && arr.length) {
+                cache[key].remove(arr);
+            }
+        }
+    });
 }
 
 function onDrawSuccess(data) {
     console.log("onDrawSuccess");
     console.log(data);
+    try {
+        var res = JSON.parse(data);
+        updateClientData(res);
+
+        if (res.updated && res.updated.userItems) {
+            var userItems = res.updated.userItems;
+            if (userItems.length > 0) {
+                var notice = "You've got items: ";
+                var items = [];
+                _.each(userItems, function(userItem) {
+                    var item = cache.items.getBy({id: userItem.item_id});
+                    items.push(item.name);
+                });
+                notice += items.join(", ");
+                $("#gacha-notice").text(notice);
+            }
+        }
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 function onDrawError(data) {

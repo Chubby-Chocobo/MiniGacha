@@ -122,9 +122,16 @@ module.exports = BaseService.subclass({
                     num    : 1
                 }, next);
             }],
+            // Re-query to get new data since there're 2 cases in minusUserCoin flow.
+            // TODO: can be refactored to a better flow
             user : ["minusUserCoin", function(next, res) {
                 UserModel.get({
                     where : "id=" + userId,
+                }, next);
+            }],
+            updatedUserFreeGacha : ["minusUserCoin", function(next, res) {
+                UserFreeGachaModel.get({
+                    where : "user_id=" + userId + " AND gacha_id=" + gachaId
                 }, next);
             }]
         }, callback);

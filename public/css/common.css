@@ -104,6 +104,13 @@ h1 {
     font-family: "Times New Roman";
 }
 
+#gacha-notice {
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-family: "Times New Roman";
+}
+
 .form-control {
     width: 320px;
     height: 44px;

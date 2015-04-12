@@ -38,9 +38,21 @@ var GachaController = BaseController.subclass({
                 GachaService.rollback();
                 return;
             }
+            var user = ret.draw.user.getData();
+
+            var userItems = [ret.draw.addItemForUser];
+
+            var userFreeGachas = [];
+            if (ret.draw.updatedUserFreeGacha) {
+                userFreeGachas.push(ret.draw.updatedUserFreeGacha.getData());
+            }
+
             res.send({
-                item : ret.draw.doDraw.getData(),
-                user : ret.draw.user.getData()
+                updated : {
+                    user            : user,
+                    userFreeGachas  : userFreeGachas,
+                    userItems       : userItems,
+                }
             });
         });
     },
