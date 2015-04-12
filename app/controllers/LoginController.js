@@ -6,9 +6,9 @@ var LoginController = BaseController.subclass({
     initialize : function() {
         logger.info(this.classname + "::initialize");
 
-        this._router.get('/', this._main.bind(this));
-        this._router.post('/login', this._login.bind(this));
-        this._router.post('/register', this._register.bind(this));
+        this._router.all('/', this._main.bind(this));
+        this._router.all('/login', this._login.bind(this));
+        this._router.all('/register', this._register.bind(this));
     },
 
     _main : function(req, res) {
@@ -17,6 +17,8 @@ var LoginController = BaseController.subclass({
         // For debug only
         // req.session.userId = 10;
         // req.session.authToken = "c741359515a8585e182c6137f674d609";
+
+        // TODO: authenticate in all requests, save multi auth tokens from all browsers.
 
         var userId       = req.session.userId;
         var authToken    = req.session.authToken;
@@ -49,10 +51,16 @@ var LoginController = BaseController.subclass({
                 });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.AUTHENTICATE.FAIL) {
                 res.status(401);
-                res.send(msg);
+                res.render("main", {
+                    user : null,
+                    data : null
+                });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.NOT_REGISTER) {
                 res.status(401);
-                res.send(msg);
+                res.render("main", {
+                    user : null,
+                    data : null
+                });
             } else {
                 logger.error("LoginController::_main unkonwn message: " + JSON.stringify(msg));
                 res.status(500);
@@ -98,11 +106,9 @@ var LoginController = BaseController.subclass({
                     data : data
                 });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.WRONG_PASSWORD) {
-                res.status(401);
-                res.send(msg);
+                res.redirect("/");
             } else if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.NOT_REGISTER) {
-                res.status(401);
-                res.send(msg);
+                res.redirect("/");
             } else {
                 logger.error("LoginController::_login unkonwn message: " + JSON.stringify(msg));
                 res.status(500);

@@ -1,6 +1,10 @@
 var Config = {
     UPDATE_INTERVAL      : 15,
     UI_UPDATE_INTERVAL  : 1000,
+    VIEW : {
+        GACHA     : "gacha",
+        INVENTORY : "inventory"
+    }
 };
 
 // TODO: refactor to a more generic and convenient caching mechanism.
@@ -77,6 +81,9 @@ var cache = {
     userItems        : new Cache("UserItemCache", ["user_id", "item_id"]),
 };
 
+var global = {}
+global.currentView = Config.VIEW.GACHA;
+
 $(document).ready(function() {
     init();
 });
@@ -104,6 +111,7 @@ function update() {
 }
 
 function init() {
+    console.log(data);
     cache.user = user;
     cache.gachas.update(data.gacha.gachas);
     cache.freeGachas.update(data.gacha.freeGachas);
@@ -112,6 +120,9 @@ function init() {
     cache.userGachas.update(data.userGacha.userGacha);
     cache.userFreeGachas.update(data.userGacha.userFreeGacha);
     cache.userBoxGachas.update(data.userGacha.userBoxGacha);
+    cache.userItems.update(data.userItem.userItem);
+
+    switchView(global.currentView);
 
     setInterval(update, Config.UPDATE_INTERVAL);
 }
@@ -123,6 +134,53 @@ function updateCurrentTime(now, delta) {
 
 function updateCurrentCoin(now, delta) {
     $(".current-coin").text(Math.floor((now - cache.user.zero_coin_at)/1000));
+}
+
+function switchView(viewName) {
+    switch (viewName) {
+        case Config.VIEW.GACHA:
+            switchToGachaView();
+            return;
+        case Config.VIEW.INVENTORY:
+            switchToInventoryView();
+            return;
+        default:
+            console.log("switchView: invalid view=" + viewName);
+            return;
+    }
+}
+
+function switchToGachaView() {
+    global.currentView = Config.VIEW.GACHA;
+
+    $("#gacha-view").removeClass("disappear");
+    $("#gacha-view-btn").addClass("active");
+    $("#inventory-view").addClass("disappear");
+    $("#inventory-view-btn").removeClass("active");
+
+    _.each(cache.gachas.getArrayData(), function(gacha) {
+        $("#gacha-price-" + gacha.id).text(getPriceString(gacha.price));
+    });
+}
+
+function switchToInventoryView() {
+    global.currentView = Config.VIEW.INVENTORY;
+
+    $("#gacha-view").addClass("disappear");
+    $("#gacha-view-btn").removeClass("active");
+    $("#inventory-view").removeClass("disappear");
+    $("#inventory-view-btn").addClass("active");
+
+    _.each(cache.userItems.getArrayData(), function(userItem) {
+        if (userItem.num > 0) {
+            $("#item-num-" + userItem.item_id).text(getQuantityString(userItem.num));
+            $("#item-" + userItem.item_id).removeClass("disappear");
+            var item = cache.items.getBy({
+                id : userItem.item_id
+            });
+            $("#item-rarity-" + userItem.item_id).text(getRarityString(item.rarity));
+        }
+    });
 }
 
 function markUpFreeGachas(now, delta) {
@@ -196,6 +254,24 @@ function updateClientData(res) {
     });
 }
 
+
+// TODO: make localization for these functions
+function getRarityString(rarity) {
+    var result = "";
+    for (var i = 0; i < rarity; i++) {
+        result += "★";
+    }
+    return result;
+}
+
+function getQuantityString(quantity) {
+    return "Currently you have: " + quantity;
+}
+
+function getPriceString(price) {
+    return "Price: " + price;
+}
+
 function onDrawSuccess(data) {
     console.log("onDrawSuccess");
     console.log(data);
@@ -211,6 +287,11 @@ function onDrawSuccess(data) {
                 _.each(userItems, function(userItem) {
                     var item = cache.items.getBy({id: userItem.item_id});
                     items.push(item.name);
+                    $("#item-got-icon").text(item.id);
+                    $("#item-got-name").text(item.name);
+                    $("#item-got-rarity").text(getRarityString(item.rarity));
+                    $("#item-got-num").text(getQuantityString(userItem.num));
+                    $("#item-got").removeClass("disappear");
                 });
                 notice += items.join(", ");
                 $("#gacha-notice").text(notice);

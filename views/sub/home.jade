@@ -7,10 +7,25 @@ div.ar
 div.ac Welcome back, #{user.email}
 div.ac Your balance:&nbsp
     span.current-coin aaa
+div.w320c#tab-view
+    input(id='gacha-view-btn', class='common-btn gacha-view-btn active' type='button', value='Gacha', onClick="switchToGachaView();")
+    input(id='inventory-view-btn', class='common-btn inventory-view-btn' type='button', value='Inventory', onClick="switchToInventoryView();")
 div.w320c#gacha-view
     each gacha, i in data.gacha.gachas
         div(class='gacha-banner gacha-#{gacha.id}' onclick='drawGacha(#{gacha.id});')
-            span(class='gacha-name') #{gacha.name}
-            span(class='gacha-markup' id='gacha-markup-#{gacha.id}')
+            div.gacha-name #{gacha.name}
+            div.gacha-markup(id='gacha-markup-#{gacha.id}')
+            div.gacha-price(id='gacha-price-#{gacha.id}')
     div#gacha-notice.info
+    div(id='item-got' class='item disappear')
+        div.item-icon(id='item-got-icon')
+        div.item-rarity(id='item-got-rarity')
+        div.item-name(id='item-got-name')
+        div.item-num(id='item-got-num')
 div.w320c#inventory-view.disappear
+    each item, i in data.item.items
+        div(id='item-#{item.id}' class='item disappear')
+            div.item-icon(id='item-icon-#{item.id}') #{item.id}
+            div.item-rarity(id='item-rarity-#{item.id}')
+            div.item-name(id='item-name-#{item.id}') #{item.name}
+            div.item-num(id='item-num-#{item.id}')

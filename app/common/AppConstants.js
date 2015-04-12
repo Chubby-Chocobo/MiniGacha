@@ -1,5 +1,5 @@
 module.exports = {
-    STARTED_COIN : 5000 * 1000,
+    STARTED_COIN : 5000,
     COIN_PER_SECOND : 1,
     GACHA : {
         TYPE : {

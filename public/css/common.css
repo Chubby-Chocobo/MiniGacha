@@ -49,8 +49,6 @@ h1 {
 .common-btn {
     width: 320px;
     height: 44px;
-    background-color: rgb(96, 176, 68);
-    background-image: linear-gradient(rgb(138, 221, 109), rgb(96, 176, 68));
     border: 0px;
     border-radius: 5px;
     color: white;
@@ -61,12 +59,27 @@ h1 {
 .common-btn.accept {
     width: 155px;
     margin-left: 5px;
+    background-image: linear-gradient(rgb(138, 221, 109), rgb(96, 176, 68));
 }
 
 .common-btn.cancel {
     width: 155px;
-    background-image: linear-gradient(rgb(239, 75, 15), rgb(255, 0, 0));
     margin-right: 5px;
+    background-image: linear-gradient(rgb(239, 75, 15), rgb(255, 0, 0));
+}
+
+.common-btn.gacha-view-btn {
+    width: 155px;
+    margin-right: 5px;
+}
+
+.common-btn.inventory-view-btn {
+    width: 155px;
+    margin-left: 5px;
+}
+
+.common-btn.active {
+    background-image: linear-gradient(rgb(63, 211, 255), rgb(13, 134, 252));
 }
 
 .w320c {
@@ -75,6 +88,55 @@ h1 {
     left: 50%;
     position: relative;
     margin-left: -160px;
+}
+
+.item {
+    width: 100%;
+    height: 48px;
+    background: rgb(137, 245, 130);
+    border-radius: 3px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    position: relative;
+}
+
+.item > .item-icon {
+    width: 40px;
+    height: 40px;
+    background: rgb(250, 108, 34);
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    color: white;
+    text-align: center;
+    line-height: 40px;
+}
+
+.item > .item-name {
+    position: absolute;
+    top: 4px;
+    left: 50px;
+    color: rgb(0, 110, 255);
+    line-height: 20px;
+}
+
+.item > .item-rarity {
+    width: 300px;
+    height: 48px;
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    color: rgb(255, 0, 0);
+    line-height: 48px;
+    text-align: right;
+}
+
+.item > .item-num {
+    position: absolute;
+    top: 24px;
+    left: 50px;
+    color: rgb(255, 0, 116);
+    line-height: 20px;
 }
 
 #login-form {
@@ -137,18 +199,15 @@ h1 {
 }
 
 .gacha-banner.gacha-1 {
-    background-color: rgb(96, 176, 68);
     background-image: linear-gradient(rgb(138, 221, 109), rgb(96, 176, 68));
 }
 
 .gacha-banner.gacha-2 {
-    background-color: rgb(104, 68, 176);
     background-image: linear-gradient(rgb(116, 109, 221), rgb(95, 68, 176));
 }
 
 .gacha-banner.gacha-3 {
-    background-color: rgb(234, 21, 110);
-    background-image: linear-gradient(rgb(228, 24, 148), rgb(247, 9, 73));
+    background-image: linear-gradient(rgb(218, 129, 242), rgb(189, 53, 187));
 }
 
 .gacha-markup {
@@ -162,6 +221,18 @@ h1 {
     font-size: 0.9rem;
     font-weight: normal;
     color: black;
+}
+
+.gacha-price {
+    width: 300px;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    text-align: right;
+    font-size: 0.9rem;
+    font-weight: normal;
+    line-height: normal;
+    color: rgb(200, 0, 0);
 }
 
 #content {
