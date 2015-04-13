@@ -2,7 +2,7 @@
 
 ## Preparation
 ### Install node
-    Get node from https://nodejs.org/, version 0.10.24 is recommended
+    Get node from https://nodejs.org/, version 0.10.xx is recommended
 
 ### Install npm
     $ curl https://npmjs.org/install.sh | sh
@@ -24,6 +24,8 @@
     $ make config-prod
 
 ### Init database file & schema:
+    To init db from beginning, remove data/db/MiniGacha.db file and run:
+    $ make init-db
     Add schema file to data/schema folder
     $ make load-schema target={target}
 
