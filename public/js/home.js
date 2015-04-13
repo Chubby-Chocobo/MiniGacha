@@ -265,7 +265,7 @@ function getRarityString(rarity) {
 }
 
 function getQuantityString(quantity) {
-    return "Currently you have: " + quantity;
+    return "You have: " + quantity;
 }
 
 function getPriceString(price) {

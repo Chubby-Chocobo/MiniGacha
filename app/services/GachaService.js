@@ -73,17 +73,12 @@ module.exports = BaseService.subclass({
                     where : "gacha_id=" + gachaId
                 }, next);
             },
-            userGacha : function(next, res) {
-                UserGachaModel.get({
-                    where : "user_id=" + userId + " AND gacha_id=" + gachaId
-                }, next);
-            },
             userFreeGacha : function(next, res) {
                 UserFreeGachaModel.get({
                     where : "user_id=" + userId + " AND gacha_id=" + gachaId
                 }, next);
             },
-            doDraw : ["gachaMaster", "gachaFree", "userGacha", "userFreeGacha", function(next, res) {
+            doDraw : ["gachaMaster", "gachaFree", "userFreeGacha", function(next, res) {
                 if (res.gachaFree) {
                     var waitInterval = res.gachaFree.wait_interval * 1000;
                     if (!res.userFreeGacha) {
@@ -96,9 +91,9 @@ module.exports = BaseService.subclass({
                 }
 
                 if (res.gachaMaster.type == AppConstants.GACHA.TYPE.BOX) {
-                    self._drawBoxGacha(params, res.gachaMaster, res.userGacha, next);
+                    self._drawBoxGacha(params, res.gachaMaster, next);
                 } else {
-                    self._drawRegularGacha(params, res.gachaMaster, res.userGacha, next);
+                    self._drawRegularGacha(params, res.gachaMaster, next);
                 }
             }],
             minusUserCoin : ["doDraw", function(next, res) {
@@ -145,7 +140,7 @@ module.exports = BaseService.subclass({
         }, callback);
     },
 
-    _drawRegularGacha : function(params, gachaMaster, userGacha, callback) {
+    _drawRegularGacha : function(params, gachaMaster, callback) {
         var userId                  = params.userId;
         var gachaId                 = params.gachaId;
         var self                    = this;
@@ -172,7 +167,7 @@ module.exports = BaseService.subclass({
         });
     },
 
-    _drawBoxGacha : function(params, gachaMaster, userGacha, callback) {
+    _drawBoxGacha : function(params, gachaMaster, callback) {
         var userId                  = params.userId;
         var gachaId                 = params.gachaId;
         var self                    = this;
@@ -183,11 +178,32 @@ module.exports = BaseService.subclass({
         var GachaWeightModel        = getModel("GachaWeightModel");
         var UserGachaModel          = getModel("UserGachaModel");
         var UserBoxGachaModel       = getModel("UserBoxGachaModel");
+        var UserBoxSeqModel         = getModel("UserBoxSeqModel");
 
         async.auto({
-
+            userBoxSequence : function(next, res) {
+                UserBoxSeqModel.getOrInit({
+                    userId : userId,
+                    gachaId : gachaId
+                }, next);
+            },
+            boxContent : ["userBoxSequence", function(next, res) {
+                GachaBoxContentModel.all({
+                    where : "gacha_id=" + gachaId
+                }, next);
+            }],
+            userBoxContent : ["boxContent", function(next, res) {
+                UserBoxGachaModel.all({
+                    where : "user_id=" + userId + " AND gacha_id=" + gachaId
+                }, next);
+            }],
+            chooseRemainingContent : ["userBoxContent", function(next, res) {
+                logger.info("chooseRemainingContent");
+                next();
+            }],
         }, function(err, res) {
-
+            logger.info("_drawBoxGacha");
+            callback("This is not finished yet.");
         });
     }
 });
