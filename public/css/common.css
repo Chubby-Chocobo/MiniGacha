@@ -46,6 +46,20 @@ h1 {
     text-align: right;
 }
 
+.username {
+    font-weight: bold;
+    color: blueviolet;
+}
+
+.current-time {
+    margin-bottom: 10px;
+    color: green;
+}
+
+.current-coin {
+    color: crimson;
+}
+
 .common-btn {
     width: 320px;
     height: 44px;
@@ -94,9 +108,8 @@ h1 {
     width: 100%;
     height: 48px;
     background: rgb(137, 245, 130);
-    border-radius: 3px;
-    margin-top: 1px;
-    margin-bottom: 1px;
+    border-radius: 5px;
+    margin-top: 3px;
     position: relative;
 }
 
@@ -110,6 +123,7 @@ h1 {
     color: white;
     text-align: center;
     line-height: 40px;
+    border-radius: 5px;
 }
 
 .item > .item-name {
@@ -126,7 +140,7 @@ h1 {
     position: absolute;
     top: 0px;
     right: 10px;
-    color: rgb(255, 0, 0);
+    color: rgb(146, 28, 226);
     line-height: 48px;
     text-align: right;
 }

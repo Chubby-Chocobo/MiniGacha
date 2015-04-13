@@ -126,6 +126,7 @@ module.exports = BaseClass.subclass({
 
     insertWithData : function(data, callback) {
         if (!data || !data.length) {
+            logger.warn(this.classname + "::insertWithData data=" + JSON.stringify(data));
             callback();
             return;
         }
@@ -147,6 +148,7 @@ module.exports = BaseClass.subclass({
 
     insert : function(entities, callback) {
         if (!entities || !entities.length) {
+            logger.warn(this.classname + "::insert data=" + JSON.stringify(data));
             callback();
             return;
         }

@@ -15,13 +15,15 @@ var LoginController = BaseController.subclass({
         var LoginService = getService("LoginService");
 
         // For debug only
-        // req.session.userId = 10;
-        // req.session.authToken = "c741359515a8585e182c6137f674d609";
+        req.session.userId = 2;
+        req.session.authToken = "aa79f6933b51e88572a23cbc84a69377";
 
         // TODO: authenticate in all requests, save multi auth tokens from all browsers.
 
         var userId       = req.session.userId;
         var authToken    = req.session.authToken;
+
+        logger.info("userId=" + userId + ", authToken=" + authToken);
 
         if (!userId || !authToken) {
             res.render("main");
@@ -50,12 +52,16 @@ var LoginController = BaseController.subclass({
                     data : data
                 });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.AUTHENTICATE.FAIL) {
+                delete req.session.userId;
+                delete req.session.authToken;
                 res.status(401);
                 res.render("main", {
                     user : null,
                     data : null
                 });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.NOT_REGISTER) {
+                delete req.session.userId;
+                delete req.session.authToken;
                 res.status(401);
                 res.render("main", {
                     user : null,
@@ -63,6 +69,8 @@ var LoginController = BaseController.subclass({
                 });
             } else {
                 logger.error("LoginController::_main unkonwn message: " + JSON.stringify(msg));
+                delete req.session.userId;
+                delete req.session.authToken;
                 res.status(500);
                 res.send(AppConstants.RESPONSE_MESSAGE.COMMON.UNKNOWN_ERROR);
             }
@@ -99,20 +107,25 @@ var LoginController = BaseController.subclass({
 
             if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.SUCCESS) {
                 req.session.userId      = user.id;
-                req.session.email       = user.email;
-                req.session.authToken   = user.auth_token;
+                req.session.authToken   = ret.login.authToken;
                 res.render("sub/home", {
                     user : user.getData(),
                     data : data
                 });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.WRONG_PASSWORD) {
+                delete req.session.userId;
+                delete req.session.authToken;
                 res.status(401);
                 res.send(msg);
             } else if (msg == AppConstants.RESPONSE_MESSAGE.LOGIN.NOT_REGISTER) {
+                delete req.session.userId;
+                delete req.session.authToken;
                 res.status(401);
                 res.send(msg);
             } else {
                 logger.error("LoginController::_login unkonwn message: " + JSON.stringify(msg));
+                delete req.session.userId;
+                delete req.session.authToken;
                 res.status(500);
                 res.send(AppConstants.RESPONSE_MESSAGE.COMMON.UNKNOWN_ERROR);
             }
@@ -149,22 +162,22 @@ var LoginController = BaseController.subclass({
 
             logger.info(user);
 
-            req.session.userId      = user.id;
-            req.session.email       = user.email;
-            req.session.authToken   = user.auth_token;
-
             if (msg == AppConstants.RESPONSE_MESSAGE.REGISTER.SUCCESS) {
-                req.session.email       = user.email;
-                req.session.authToken   = user.auth_token;
+                req.session.userId      = user.id;
+                req.session.authToken   = ret.register.authToken;
                 res.render("sub/home", {
                     user : user.getData(),
                     data : data
                 });
             } else if (msg == AppConstants.RESPONSE_MESSAGE.REGISTER.FAIL) {
+                delete req.session.userId;
+                delete req.session.authToken;
                 res.status(401);
                 res.send(msg);
             } else {
                 logger.error("LoginController::_register unkonwn message: " + JSON.stringify(msg));
+                delete req.session.userId;
+                delete req.session.authToken;
                 res.status(500);
                 res.send(AppConstants.RESPONSE_MESSAGE.COMMON.UNKNOWN_ERROR);
             }

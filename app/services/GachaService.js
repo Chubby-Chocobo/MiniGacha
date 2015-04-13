@@ -118,12 +118,12 @@ module.exports = BaseService.subclass({
                 }, next);
             }],
             updateUserGacha : ["doDraw", function(next, res) {
-                UserGachaModel.insertWithData({
+                UserGachaModel.insertWithData([{
                     user_id     : userId,
                     gacha_id    : gachaId,
                     item_id     : res.doDraw.id,
                     created_at  : now
-                }, next);
+                }], next);
             }],
             // Re-query to get new data since there're 2 cases in minusUserCoin flow.
             // TODO: can be refactored to a better flow
@@ -192,18 +192,58 @@ module.exports = BaseService.subclass({
                     where : "gacha_id=" + gachaId
                 }, next);
             }],
-            userBoxContent : ["boxContent", function(next, res) {
+            userBoxContent : ["userBoxSequence", function(next, res) {
                 UserBoxGachaModel.all({
-                    where : "user_id=" + userId + " AND gacha_id=" + gachaId
+                    where : "user_id=" + userId + " AND gacha_id=" + gachaId + " AND box_id=" + res.userBoxSequence.box_id
                 }, next);
             }],
-            chooseRemainingContent : ["userBoxContent", function(next, res) {
-                logger.info("chooseRemainingContent");
-                next();
+            chooseItem : ["boxContent", "userBoxContent", function(next, res) {
+                var boxContents = _.indexBy(res.boxContent, "item_id");
+                var userBoxContents = _.indexBy(res.userBoxContent, "item_id");
+                var remainingContents = [];
+                for (itemId in boxContents) {
+                    var boxContent = boxContents[itemId];
+                    var userBoxContent = userBoxContents[itemId];
+                    var remainingNum = boxContent.num - (userBoxContent ? userBoxContent.num : 0);
+                    if (remainingNum > 0) {
+                        remainingContents.push({
+                            itemId : itemId,
+                            num    : remainingNum
+                        });
+                    }
+                }
+
+                var selected = Utils.getRandomByProb(remainingContents, "num");
+                if (!selected) {
+                    next("Your box is empty now. Please wait until it's reset.");
+                    return;
+                }
+
+                next(null, selected.itemId);
+            }],
+            updateUserBox : ["chooseItem", function(next, res) {
+                var userBox = _.find(res.userBoxContent, function(e) {
+                    return e.item_id == res.chooseItem;
+                });
+                if (!userBox) {
+                    UserBoxGachaModel.insertWithData([{
+                        user_id  : userId,
+                        gacha_id : gachaId,
+                        item_id  : res.chooseItem,
+                        box_id   : res.userBoxSequence.box_id,
+                        num      : 1
+                    }], next);
+                } else {
+                    userBox.num += 1;
+                    userBox.save(next);
+                }
             }],
         }, function(err, res) {
-            logger.info("_drawBoxGacha");
-            callback("This is not finished yet.");
+            if (err) {
+                callback(err);
+                return;
+            }
+            callback(err, {id: res.chooseItem});
         });
     }
 });

@@ -26,7 +26,7 @@ module.exports = BaseModel.subclass({
                         box_id      : 1,
                         created_at  : Date.now()
                     });
-                    self.insert(e, function(_err, _res) {
+                    self.insert([e], function(_err, _res) {
                         if (_err) {
                             next(_err);
                             return;

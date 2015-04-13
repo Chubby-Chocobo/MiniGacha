@@ -3,10 +3,13 @@ script(type='text/javascript').
     var data = !{JSON.stringify(data)};
 script(src='js/home.js')
 div.ar
-    span.current-time.fn9
-div.ac Welcome back, #{user.email}
-div.ac Your balance:&nbsp
+    div.current-time.fn9 &nbsp
+div.ac Welcome back,&nbsp
+    span.username #{user.email}
+div.ac
+    span Your balance:&nbsp
     span.current-coin
+    span &nbspcoins
 div.w320c#tab-view
     input(id='gacha-view-btn', class='common-btn gacha-view-btn active' type='button', value='Gacha', onClick="switchToGachaView();")
     input(id='inventory-view-btn', class='common-btn inventory-view-btn' type='button', value='Inventory', onClick="switchToInventoryView();")

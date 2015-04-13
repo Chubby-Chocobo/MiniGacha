@@ -6,10 +6,11 @@ module.exports = BaseService.subclass({
     classname : "LoginService",
 
     login : function(params, callback) {
-        var UserModel    = getModel("UserModel");
-        var email        = params.email;
-        var password     = params.password;
-        var self         = this;
+        var UserModel       = getModel("UserModel");
+        var UserAuthModel   = getModel("UserAuthModel");
+        var email           = params.email;
+        var password        = params.password;
+        var self            = this;
 
         async.auto({
             getUser : function(next, res) {
@@ -21,27 +22,35 @@ module.exports = BaseService.subclass({
                 var user = res.getUser;
                 if (user) {
                     if (user.password == password) {
-                        user.auth_token = self._generateAuthToken(user.email, user.password);
-                        user.save(function(_err, _res) {
+                        var authToken = self._generateAuthToken(user.email, user.password);
+                        UserAuthModel.insertWithData([{
+                            user_id    : user.id,
+                            auth_token : authToken,
+                            created_at : Date.now()
+                        }], function(_err, _res) {
                             if (_err) {
+                                logger.error(_err);
                                 next(_err);
                                 return;
                             }
                             next(null, {
-                                msg  : AppConstants.RESPONSE_MESSAGE.LOGIN.SUCCESS,
-                                user : user,
+                                msg       : AppConstants.RESPONSE_MESSAGE.LOGIN.SUCCESS,
+                                user      : user,
+                                authToken : authToken,
                             });
                         });
                     } else {
                         next(null, {
-                            msg  : AppConstants.RESPONSE_MESSAGE.LOGIN.WRONG_PASSWORD,
-                            user : null,
+                            msg       : AppConstants.RESPONSE_MESSAGE.LOGIN.WRONG_PASSWORD,
+                            user      : null,
+                            authToken : null,
                         });
                     }
                 } else {
                     next(null, {
-                        msg  : AppConstants.RESPONSE_MESSAGE.LOGIN.NOT_REGISTER,
-                        user : null,
+                        msg       : AppConstants.RESPONSE_MESSAGE.LOGIN.NOT_REGISTER,
+                        user      : null,
+                        authToken : null,
                     });
                 }
             }],
@@ -70,10 +79,11 @@ module.exports = BaseService.subclass({
     },
 
     authenticate : function (params, callback) {
-        var UserModel    = getModel("UserModel");
-        var userId       = params.userId;
-        var authToken    = params.authToken;
-        var self         = this;
+        var UserModel       = getModel("UserModel");
+        var UserAuthModel   = getModel("UserAuthModel");
+        var userId          = params.userId;
+        var authToken       = params.authToken;
+        var self            = this;
 
         async.auto({
             getUser : function(next, res) {
@@ -81,10 +91,21 @@ module.exports = BaseService.subclass({
                     where : "id=" + userId
                 }, next);
             },
-            checkUser : ["getUser", function(next, res) {
+            userAuths : function(next, res) {
+                UserAuthModel.all({
+                    where : "user_id=" + userId
+                }, next);
+            },
+            checkUser : ["getUser", "userAuths", function(next, res) {
                 var user = res.getUser;
                 if (user) {
-                    if (user.auth_token == authToken) {
+                    var isAuthorized = false;
+                    _.each(res.userAuths, function(userAuth) {
+                        if (authToken == userAuth.auth_token) {
+                            isAuthorized = true;
+                        }
+                    });
+                    if (isAuthorized) {
                         next(null, {
                             msg  : AppConstants.RESPONSE_MESSAGE.AUTHENTICATE.SUCCESS,
                             user : user,
@@ -130,37 +151,45 @@ module.exports = BaseService.subclass({
     },
 
     register : function (params, callback) {
-        var UserModel    = getModel("UserModel");
-        var email        = params.email;
-        var password     = params.password;
-        var self         = this;
+        var UserModel       = getModel("UserModel");
+        var UserAuthModel   = getModel("UserAuthModel");
+        var email           = params.email;
+        var password        = params.password;
+        var self            = this;
 
         var UserEntity = require("../entities/UserEntity");
         var user = new UserEntity();
         var now = Date.now();
+        var authToken = self._generateAuthToken(email, password);
         user.initialize(UserModel, {
             username        : email,
             email           : email,
             password        : password,
             registered_at   : now,
-            zero_coin_at    : now - 1000 * AppConstants.STARTED_COIN * AppConstants.COIN_PER_SECOND,
-            auth_token      : self._generateAuthToken(email, password),
+            zero_coin_at    : now - 1000 * AppConstants.STARTED_COIN * AppConstants.COIN_PER_SECOND
         });
 
         async.auto({
             insertNewUser : function(next, res) {
                 UserModel.insert([user], next);
             },
-            // Ugly flow. Should got userId via a sequence before insert.
+            // Should got userId via a sequence before or right after insert.
             // TODO: refactor
             updatedUser : ["insertNewUser", function(next, res) {
                 UserModel.get({
                     where : "email='" + email + "'",
                 }, next);
             }],
-            data : function(next, res) {
-                self._getDataToRenderHome(-1, next);
-            },
+            createAuthToken : ["updatedUser", function(next, res) {
+                UserAuthModel.insertWithData({
+                    user_id     : res.updatedUser.id,
+                    authToken   : authToken,
+                    created_at  : now
+                }, next);
+            }],
+            data : ["updatedUser", function(next, res) {
+                self._getDataToRenderHome(res.updatedUser.id, next);
+            }],
         }, function (err, res) {
             if (err) {
                 callback(err, {
@@ -185,6 +214,8 @@ module.exports = BaseService.subclass({
         return token;
     },
 
+    // A bit inconsistent with newer data flow of client
+    // TODO: refactor
     _getDataToRenderHome : function(userId, callback) {
         var GachaService    = getService("GachaService");
         var ItemService     = getService("ItemService");

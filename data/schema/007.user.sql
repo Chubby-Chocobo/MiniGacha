@@ -4,6 +4,5 @@ CREATE TABLE `user` (
     `email` TEXT NOT NULL UNIQUE,
     `password`  TEXT NOT NULL,
     `registered_at` INTEGER NOT NULL,
-    `zero_coin_at`  INTEGER NOT NULL,
-    `auth_token` TEXT
+    `zero_coin_at`  INTEGER NOT NULL
 );
