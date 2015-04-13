@@ -181,11 +181,11 @@ module.exports = BaseService.subclass({
                 }, next);
             }],
             createAuthToken : ["updatedUser", function(next, res) {
-                UserAuthModel.insertWithData({
+                UserAuthModel.insertWithData([{
                     user_id     : res.updatedUser.id,
-                    authToken   : authToken,
+                    auth_token  : authToken,
                     created_at  : now
-                }, next);
+                }], next);
             }],
             data : ["updatedUser", function(next, res) {
                 self._getDataToRenderHome(res.updatedUser.id, next);
@@ -193,17 +193,19 @@ module.exports = BaseService.subclass({
         }, function (err, res) {
             if (err) {
                 callback(err, {
-                    msg  : AppConstants.RESPONSE_MESSAGE.REGISTER.FAIL,
-                    user : res.updatedUser,
-                    data : null,
+                    msg       : AppConstants.RESPONSE_MESSAGE.REGISTER.FAIL,
+                    user      : res.updatedUser,
+                    data      : null,
+                    authToken : null,
                 });
                 return;
             }
 
             callback(null, {
-                msg  : AppConstants.RESPONSE_MESSAGE.REGISTER.SUCCESS,
-                user : res.updatedUser,
-                data : res.data
+                msg       : AppConstants.RESPONSE_MESSAGE.REGISTER.SUCCESS,
+                user      : res.updatedUser,
+                data      : res.data,
+                authToken : authToken,
             });
         });
     },

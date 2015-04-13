@@ -212,6 +212,13 @@ h1 {
     position: relative;
 }
 
+.gacha-name {
+    line-height: normal;
+    width: 320px;
+    text-align: center;
+    line-height: 60px;
+}
+
 .gacha-banner.gacha-1 {
     background-image: linear-gradient(rgb(138, 221, 109), rgb(96, 176, 68));
 }
@@ -232,7 +239,7 @@ h1 {
     float: right;
     vertical-align: bottom;
     line-height: normal;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: normal;
     color: black;
 }
@@ -243,7 +250,7 @@ h1 {
     right: 10px;
     top: 5px;
     text-align: right;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: normal;
     line-height: normal;
     color: rgb(200, 0, 0);

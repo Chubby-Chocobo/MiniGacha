@@ -156,7 +156,7 @@ module.exports = BaseClass.subclass({
 
     insert : function(entities, callback) {
         if (!entities || !entities.length) {
-            logger.warn(this.classname + "::insert data=" + JSON.stringify(data));
+            logger.warn(this.classname + "::insert entities=" + JSON.stringify(entities));
             callback();
             return;
         }

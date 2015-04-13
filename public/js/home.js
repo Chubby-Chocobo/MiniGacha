@@ -83,6 +83,8 @@ var cache = {
 
 var global = {}
 global.currentView = Config.VIEW.GACHA;
+global.onRequest = false;
+global.updateImmediately = false;
 
 $(document).ready(function() {
     init();
@@ -90,12 +92,13 @@ $(document).ready(function() {
 
 function onUpdate(now, delta) {
     cache.fromLastUIUpdate += delta;
-    if (cache.fromLastUIUpdate > Config.UI_UPDATE_INTERVAL) {
+    if (cache.fromLastUIUpdate > Config.UI_UPDATE_INTERVAL || global.updateImmediately) {
         updateCurrentTime(now, delta);
         updateCurrentCoin(now, delta);
         markUpFreeGachas(now, delta);
         markUpBoxGachas(now, delta);
         cache.fromLastUIUpdate -= Config.UI_UPDATE_INTERVAL;
+        global.updateImmediately = false;
     }
 }
 
@@ -206,17 +209,24 @@ function markUpFreeGachas(now, delta) {
                 $("#gacha-markup-" + gachaId).text("This gacha is free now.");
             } else{
                 var timeLeft = Math.floor((waitInterval - (now - userFreeGacha.last_draw_at))/1000);
-                $("#gacha-markup-" + gachaId).text("This gacha will be free in " + timeLeft);
+                $("#gacha-markup-" + gachaId).text("This gacha will be free in " + getRemainingTimeString(timeLeft));
             }
         }
     });
 }
 
 function markUpBoxGachas(now, delta) {
-    var boxGachas = cache.boxGachas;
+    var boxGachas = cache.boxGachas.getArrayData();
     if (!boxGachas || !boxGachas.length) {
         return;
     }
+
+    _.each(boxGachas, function(boxGacha) {
+        var gachaId = boxGacha.gacha_id;
+        var n = new Date(now);
+        var timeLeft = 24 * 60 * 60 - n.getHours() * 3600 - n.getMinutes() * 60 - n.getSeconds();
+        $("#gacha-markup-" + gachaId).text("This gacha content will be reset in " + getRemainingTimeString(timeLeft));
+    });
 }
 
 function updateClientData(res) {
@@ -272,7 +282,40 @@ function getPriceString(price) {
     return "Price: " + price;
 }
 
+function getRemainingTimeString(seconds) {
+    if (seconds <= 0) {
+        return "00:00:00";
+    }
+
+    var result = "";
+    var hh = Math.floor(seconds / 3600);
+    var mm = Math.floor((seconds - hh * 3600) / 60);
+    var ss = seconds - hh * 3600 - mm * 60;
+
+    if (hh > 9) {
+        result += (hh + ":");
+    } else {
+        result += ("0" + hh + ":");
+    }
+
+    if (mm > 9) {
+        result += (mm + ":");
+    } else {
+        result += ("0" + mm + ":");
+    }
+
+    if (ss > 9) {
+        result += ss;
+    } else {
+        result += ("0" + ss);
+    }
+
+    return result;
+}
+
 function onDrawSuccess(data) {
+    global.onRequest = false;
+    global.updateImmediately = true;
     console.log("onDrawSuccess");
     console.log(data);
     try {
@@ -303,6 +346,8 @@ function onDrawSuccess(data) {
 }
 
 function onDrawError(data) {
+    global.onRequest = false;
+    global.updateImmediately = true;
     console.log("onDrawError");
     console.log(data);
     $("#gacha-notice").removeClass().addClass("error").text(data.responseText);
@@ -310,6 +355,11 @@ function onDrawError(data) {
 }
 
 function drawGacha(gachaId) {
+    if (global.onRequest) {
+        return;
+    }
+
+    global.onRequest = true;
     console.log("drawGacha: " + gachaId);
 
     $.ajax({

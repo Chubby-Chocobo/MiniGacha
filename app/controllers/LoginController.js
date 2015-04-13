@@ -15,8 +15,8 @@ var LoginController = BaseController.subclass({
         var LoginService = getService("LoginService");
 
         // For debug only
-        req.session.userId = 2;
-        req.session.authToken = "aa79f6933b51e88572a23cbc84a69377";
+        // req.session.userId = 2;
+        // req.session.authToken = "aa79f6933b51e88572a23cbc84a69377";
 
         // TODO: authenticate in all requests, save multi auth tokens from all browsers.
 

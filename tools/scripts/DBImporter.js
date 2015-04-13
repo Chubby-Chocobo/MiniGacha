@@ -29,7 +29,8 @@ async.auto({
             var modelName = name + "Model";
             var ModelClass = require("../../app/models/" + modelName);
             var entityName = name + "Entity";
-            var EntityClass = require("../../app/entities/" + entityName);
+            // var EntityClass = require("../../app/entities/" + entityName);
+            var EntityClass = require("../../core/common/BaseEntity");
             var model = new ModelClass();
             model.initialize(db);
             var entities = [];
