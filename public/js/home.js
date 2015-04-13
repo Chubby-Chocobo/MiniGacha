@@ -306,6 +306,7 @@ function onDrawError(data) {
     console.log("onDrawError");
     console.log(data);
     $("#gacha-notice").removeClass().addClass("error").text(data.responseText);
+    $("#item-got").addClass("disappear");
 }
 
 function drawGacha(gachaId) {
