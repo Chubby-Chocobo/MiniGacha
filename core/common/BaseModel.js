@@ -53,6 +53,14 @@ module.exports = BaseClass.subclass({
             clause += (" where " + options.where);
         }
 
+        if (options.orderBy) {
+            clause += (" order by " + options.orderBy);
+        }
+
+        if (options.limit) {
+            clause += (" limit " + options.limit);
+        }
+
         return clause;
     },
 

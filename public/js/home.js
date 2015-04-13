@@ -206,7 +206,7 @@ function markUpFreeGachas(now, delta) {
                 $("#gacha-markup-" + gachaId).text("This gacha is free now.");
             } else{
                 var timeLeft = Math.floor((waitInterval - (now - userFreeGacha.last_draw_at))/1000);
-                $("#gacha-markup-" + gachaId).text("This gacha is free in " + timeLeft);
+                $("#gacha-markup-" + gachaId).text("This gacha will be free in " + timeLeft);
             }
         }
     });
